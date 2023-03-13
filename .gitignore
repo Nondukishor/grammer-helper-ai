@@ -1,22 +1,2 @@
-# Flask app specific files and directories
-/__pycache__/
-/*.pyc
-/*.pyo
-/instance/
-/.env
-/*.log
-
-# Python virtual environment
-venv/
-
-# IDE or editor specific files
-.vscode/
-.idea/
-
-# Other files
-*.pyc
-*.pyo
-*.log
-*.pid
-*.swp
-.DS_Store
+__pycache__
+fastapi-env
