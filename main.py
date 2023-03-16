@@ -1,13 +1,14 @@
 from typing import Union
 from fastapi import FastAPI
 from bs4 import BeautifulSoup
-import nltk
 from nltk.tag import pos_tag
 from nltk.tokenize import word_tokenize, sent_tokenize, PunktSentenceTokenizer
-from nltk.corpus import stopwords, state_union
-from nltk.stem import PorterStemmer
+from nltk.corpus import stopwords, state_union, wordnet, movie_reviews
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+import nltk
 import re
 import requests
+import random
 # modules import end
 
 app = FastAPI()
@@ -139,3 +140,91 @@ def test_chunking():
             return chunked
     except Exception as e:
         return str(e)
+
+# remove something from string
+
+
+@app.get('/api/chinking')
+def test_chunking():
+    train_text = state_union.raw('2005-GWBush.txt')
+    sample_text = state_union.raw('2006-GWBush.txt')
+    custom_sent_tokenizer = PunktSentenceTokenizer(train_text)
+    tokenized = custom_sent_tokenizer.tokenize(sample_text)
+    try:
+        for i in tokenized:
+            words = word_tokenize(i)
+            tagged = pos_tag(words)
+            chunkGram = r"""Chunk : {<.*>+}
+            }<VB.?|In|DT>+{"""
+            chunkParser = nltk.RegexpParser(chunkGram)
+            chunked = chunkParser.parse(tagged)
+            return chunked
+    except Exception as e:
+        return str(e)
+
+
+@app.get('/api/named-entity-recognition')
+def test_chunking():
+    train_text = state_union.raw('2005-GWBush.txt')
+    sample_text = state_union.raw('2006-GWBush.txt')
+    custom_sent_tokenizer = PunktSentenceTokenizer(train_text)
+    tokenized = custom_sent_tokenizer.tokenize(sample_text)
+    try:
+        for i in tokenized:
+            words = word_tokenize(i)
+            tagged = pos_tag(words)
+            namedEnt = nltk.ne_chunk(tagged, binary=True)
+            print(namedEnt)
+            return namedEnt
+    except Exception as e:
+        return str(e)
+
+
+@app.get('/api/lemmatizing')
+def test_lemmatizing():
+    lemmatizer = WordNetLemmatizer()
+    return lemmatizer.lemmatize("better", pos="a")
+
+
+@app.get('/api/word-net/{type}')
+def test_wordnet(type: str):
+    try:
+        synonyms = []
+        antonyms = []
+        for syn in wordnet.synsets("good"):
+            for l in syn.lemmas():
+                synonyms.append(l.name())
+                if l.antonyms():
+                    antonyms.append(l.antonyms()[0].name())
+            print(set(synonyms))
+            print(set(antonyms))
+        w1 = wordnet.synset('ship.n.01')
+        w2 = wordnet.synset('boat.n.01')
+
+        if type == 'sim':
+            return w1.wup_similarity(w2)
+        elif type == "sys":
+            return synonyms
+        else:
+            return antonyms
+
+    except Exception as e:
+        return str(e)
+
+
+@app.get('/api/text-classification')
+def text_classification():
+    documents = [(list(movie_reviews.words(fileid)), category)
+                 for category in movie_reviews.categories()
+                 for fileid in movie_reviews.fileids(category)]
+    random.shuffle(documents)
+    print(documents[1])
+
+    all_words = []
+    for w in movie_reviews.words():
+        all_words.append(w.lower())
+
+    all_words = nltk.FreqDist(all_words)
+    print(all_words.most_common(15))
+    print(all_words["stupid"])
+    return all_words.most_common(15)
