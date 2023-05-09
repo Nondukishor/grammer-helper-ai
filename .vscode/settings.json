@@ -1,0 +1,9 @@
+{
+    "cSpell.words": [
+        "Lemmatizer",
+        "nltk",
+        "stopwords",
+        "wordnet"
+    ],
+    "python.formatting.provider": "autopep8"
+}

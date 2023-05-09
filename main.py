@@ -1,13 +1,11 @@
 from fastapi import FastAPI
-from controller import chat
-from pydantic import BaseModel
-from textblob import TextBlob
+from dotenv import load_dotenv
+import uvicorn
+from routes.en_document import en_document_routers
+load_dotenv()
 app = FastAPI()
-class Message(BaseModel):
-    text: str
-@app.post("/")
-async def chatRoute(message: Message):
-    return await chat(message.text)
-@app.post('/correct-sentence')
-async def correct_sentence():
+app.include_router(en_document_routers)
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
 

@@ -1,0 +1,5 @@
+vrCdDkB522C_BIP7xIo8S7kbT7TtrNhXyAZjTqcEzcPFAfIC7UTtmQ
+
+curl \
+    -X GET 'https://c592181b-7602-4058-be79-d643a88fd778.us-east-1-0.aws.cloud.qdrant.io:6333' \
+    --header 'api-key: vrCdDkB522C_BIP7xIo8S7kbT7TtrNhXyAZjTqcEzcPFAfIC7UTtmQ'
